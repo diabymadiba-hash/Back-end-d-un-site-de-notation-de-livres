@@ -13,11 +13,11 @@ exports.signup = (req, res, next) => {//hashage du mot de passe avant de le sauv
         .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
         .catch(error => res.status(400).json({ error }));
     })
-    .catch(error => res.status(500).json({ error }));//erreur serveur//
+    .catch(error => res.status(500).json({ error }));//erreur serveur//  
 };
 
 exports.login = (req, res, next) => {
-  User.findOne({ email: req.body.email })//pas d'émail impossible de se connecter//
+  User.findOne({ email: req.body.email })//vérifie si l'utilisateur existe//
     .then(user => {
       if (!user) {
         return res.status(401).json({ message: 'Utilisateur non trouvé !' });//si aucun utilisateur trouvé,erreur 401//
@@ -31,7 +31,7 @@ exports.login = (req, res, next) => {
             userId: user._id,
             token: jwt.sign(
               { userId: user._id },
-              'RANDOM_SECRET_KEY',
+              'RANDOM_SECRET_KEY',//Encoder le token//
               { expiresIn: '24h' }
             )
           });
