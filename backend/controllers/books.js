@@ -1,16 +1,9 @@
 const Book = require('../models/Book');
 const fs = require('fs');
 
-/**
- * CREATE — Création d’un livre
- * - On parse les données envoyées en JSON (req.body.book)
- * - On supprime les champs interdits (_id, _userId)
- * - On ajoute l’ID utilisateur depuis le token
- * - On génère l’URL de l’image uploadée
- */
-exports.createBook = (req, res, next) => {
+/* CREATE — Ajouter un livre */
+exports.createBook = (req, res) => {
   const bookObject = JSON.parse(req.body.book);
-
   delete bookObject._id;
   delete bookObject._userId;
 
@@ -25,32 +18,22 @@ exports.createBook = (req, res, next) => {
     .catch(error => res.status(400).json({ error }));
 };
 
-/**
- * READ ALL — Récupérer tous les livres
- * - Simple requête Mongoose : Book.find()
- */
-exports.getAllBooks = (req, res, next) => {
+/* READ — Tous les livres */
+exports.getAllBooks = (req, res) => {
   Book.find()
     .then(books => res.status(200).json(books))
     .catch(error => res.status(400).json({ error }));
 };
 
-/**
- * READ ONE — Récupérer un livre par ID
- */
-exports.getOneBook = (req, res, next) => {
+/* READ — Un livre */
+exports.getOneBook = (req, res) => {
   Book.findOne({ _id: req.params.id })
     .then(book => res.status(200).json(book))
     .catch(error => res.status(404).json({ error }));
 };
 
-/**
- * UPDATE — Modifier un livre
- * - Si une nouvelle image est envoyée → on met à jour l’URL
- * - Sinon → on garde les données existantes
- * - On vérifie que l’utilisateur est bien le propriétaire du livre
- */
-exports.updateBook = (req, res, next) => {
+/* UPDATE — Modifier un livre */
+exports.updateBook = (req, res) => {
   const bookObject = req.file
     ? {
         ...JSON.parse(req.body.book),
@@ -76,13 +59,8 @@ exports.updateBook = (req, res, next) => {
     .catch(error => res.status(400).json({ error }));
 };
 
-/**
- * DELETE — Supprimer un livre
- * - Vérifie que l’utilisateur est propriétaire
- * - Supprime l’image du serveur
- * - Supprime le livre de la base
- */
-exports.deleteBook = (req, res, next) => {
+/* DELETE — Supprimer un livre */
+exports.deleteBook = (req, res) => {
   Book.findOne({ _id: req.params.id })
     .then(book => {
       if (book.userId != req.auth.userId) {
@@ -100,24 +78,19 @@ exports.deleteBook = (req, res, next) => {
     .catch(error => res.status(500).json({ error }));
 };
 
-/**
- * RATE BOOK — Noter un livre
- * - Un utilisateur ne peut noter qu’une seule fois
- * - On calcule la nouvelle moyenne
- */
-exports.rateBook = (req, res, next) => {
+/* RATE — Noter un livre */
+exports.rateBook = (req, res) => {
   const userId = req.auth.userId;
   const grade = req.body.rating;
 
   Book.findOne({ _id: req.params.id })
     .then(book => {
-
       const alreadyRated = book.ratings.find(r => r.userId === userId);
       if (alreadyRated) {
         return res.status(400).json({ message: 'Vous avez déjà noté ce livre.' });
       }
 
-      book.ratings.push({ userId: userId, grade: grade });
+      book.ratings.push({ userId, grade });
 
       const total = book.ratings.reduce((acc, r) => acc + r.grade, 0);
       book.averageRating = total / book.ratings.length;
@@ -129,12 +102,8 @@ exports.rateBook = (req, res, next) => {
     .catch(error => res.status(404).json({ error }));
 };
 
-/**
- * BEST RATED — Récupérer les 3 livres les mieux notés
- * - Tri décroissant sur averageRating
- * - Limite à 3 résultats
- */
-exports.getBestRatingBooks = (req, res, next) => {
+/* BEST — Top 3 meilleurs livres */
+exports.getBestRatingBooks = (req, res) => {
   Book.find().sort({ averageRating: -1 }).limit(3)
     .then(books => res.status(200).json(books))
     .catch(error => res.status(400).json({ error }));
