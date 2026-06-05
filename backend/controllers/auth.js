@@ -1,9 +1,9 @@
 const bcrypt = require('bcrypt');//hasher les mots de passe//
 const jwt = require('jsonwebtoken');//créer des tokens d'authentification//
-const User = require('../models/User');
+const User = require('../models/User');//importer le modèle utilisateur//
 
-exports.signup = (req, res, next) => {//hashage du mot de passe avant de le sauvegarder dans la base de données//
-  bcrypt.hash(req.body.password, 10)
+exports.signup = (req, res, next) => {// Fonction appelée quand un utilisateur s’inscrit//
+  bcrypt.hash(req.body.password, 10)//salt,securité du hash
     .then(hash => {
       const user = new User({//on crée un nouvel utilisateur avec le mot de passe hashé//
         email: req.body.email,
@@ -15,7 +15,7 @@ exports.signup = (req, res, next) => {//hashage du mot de passe avant de le sauv
     })
     .catch(error => res.status(500).json({ error }));//erreur serveur//  
 };
-
+// Fonction appelée quand un utilisateur se connecte//
 exports.login = (req, res, next) => {
   User.findOne({ email: req.body.email })//vérifie si l'utilisateur existe//
     .then(user => {
@@ -31,7 +31,7 @@ exports.login = (req, res, next) => {
             userId: user._id,
             token: jwt.sign(
               { userId: user._id },
-              'RANDOM_SECRET_KEY',//Encoder le token//
+             process.env.TOKEN_SECRET,//Encoder le token//
               { expiresIn: '24h' }
             )
           });

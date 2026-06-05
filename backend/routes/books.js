@@ -2,9 +2,8 @@ const express = require('express');
 const router = express.Router();
 
 // Middlewares
-const auth = require('../middleware/auth');            // Vérifie le token
-const multer = require('../middleware/multer-config'); // Upload image
-const sharpMiddleware = require('../middleware/sharp-config'); // Compression image
+const auth = require('../middleware/auth');            
+const imageProcessor = require('../middleware/imageProcessor'); // Multer et Sharp fusionné
 
 // Controllers
 const booksCtrl = require('../controllers/books');
@@ -18,16 +17,16 @@ router.get('/bestrating', booksCtrl.getBestRatingBooks);
 // Récupérer un livre par ID
 router.get('/:id', booksCtrl.getOneBook);
 
-// Créer un livre (auth + upload + compression)
-router.post('/', auth, multer, sharpMiddleware, booksCtrl.createBook);
+// Créer un livre (auth + upload + optimisation)
+router.post('/', auth, imageProcessor, booksCtrl.createBook);
 
-// Modifier un livre (auth + upload + compression)
-router.put('/:id', auth, multer, sharpMiddleware, booksCtrl.updateBook);
+// Modifier un livre (auth + upload + optimisation)
+router.put('/:id', auth, imageProcessor, booksCtrl.updateBook);
 
 // Supprimer un livre
 router.delete('/:id', auth, booksCtrl.deleteBook);
 
-// Noter un livre (une seule fois par utilisateur)
+// Noter un livre
 router.post('/:id/rating', auth, booksCtrl.rateBook);
 
 module.exports = router;
