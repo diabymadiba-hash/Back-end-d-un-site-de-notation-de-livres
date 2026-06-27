@@ -28,7 +28,7 @@ app.use(cors());
 --------------------------------------------------------- */
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('Connexion à MongoDB réussie !'))
-  .catch(() => console.log('Connexion à MongoDB échouée !'));
+  .catch(err => { console.error('Connexion à MongoDB échouée !', err.message); process.exit(1); });
 
 /* ---------------------------------------------------------
    Routes d'authentification (inscription / connexion)
