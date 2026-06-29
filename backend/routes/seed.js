@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Book = require('../models/Book');
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+const BASE_URL = process.env.BASE_URL || 'https://back-end-d-un-site-de-notation-de-livres-j4ko.onrender.com';
 
 const avg = (ratings) => ratings.reduce((acc, r) => acc + r.grade, 0) / ratings.length;
 
