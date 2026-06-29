@@ -21,8 +21,19 @@ app.use(helmet({ crossOriginResourcePolicy: false }));
 // Middleware pour lire le JSON dans les requêtes
 app.use(express.json());
 
-// CORS propre
-app.use(cors());
+// CORS
+const allowedOrigins = [
+  'https://back-end-d-un-site-de-notation-de-livres-xxx.vercel.app',
+  'http://localhost:3000',
+  'http://localhost:3001',
+];
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error(`CORS bloqué pour l'origine : ${origin}`));
+  },
+  credentials: true,
+}));
 
 /* ---------------------------------------------------------
    Connexion à MongoDB
