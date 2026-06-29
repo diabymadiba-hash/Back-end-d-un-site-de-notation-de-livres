@@ -10,6 +10,7 @@ const cors = require('cors');
 // Importation des routes
 const booksRoutes = require('./routes/books');
 const authRoutes = require('./routes/auth');
+const seedRoutes = require('./routes/seed');
 
 // Création de l'application Express
 const app = express();
@@ -39,6 +40,11 @@ app.use('/api/auth', authRoutes);
    Routes des livres (CRUD)
 --------------------------------------------------------- */
 app.use('/api/books', booksRoutes);
+
+/* ---------------------------------------------------------
+   Route de seed temporaire — À SUPPRIMER en production
+--------------------------------------------------------- */
+app.use('/api/seed', seedRoutes);
 
 /* ---------------------------------------------------------
    Route statique pour servir les images
