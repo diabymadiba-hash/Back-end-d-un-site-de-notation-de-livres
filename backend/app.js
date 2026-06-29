@@ -22,14 +22,17 @@ app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(express.json());
 
 // CORS
-const allowedOrigins = [
-  'https://back-end-d-un-site-de-notation-de-livres-xxx.vercel.app',
-  'http://localhost:3000',
-  'http://localhost:3001',
-];
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    if (!origin) return callback(null, true);
+    if (
+      origin === 'https://back-end-d-un-site-de-notation-de-livres-chfudawvt-diabymadiba.vercel.app' ||
+      /\.vercel\.app$/.test(origin) ||
+      origin === 'http://localhost:3000' ||
+      origin === 'http://localhost:3001'
+    ) {
+      return callback(null, true);
+    }
     callback(new Error(`CORS bloqué pour l'origine : ${origin}`));
   },
   credentials: true,
